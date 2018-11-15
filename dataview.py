@@ -8,13 +8,6 @@ def age(b):
 enrollment_df = pd.read_csv("data/enrollment.csv")
 train_df = pd.read_csv("data/train.csv")
 
-train_df['Registration Date'] = pd.to_datetime(train_df['Registration Date'])
-train_df['Procedure Date'] = pd.to_datetime(train_df['Procedure Date'])
-train_df['Date Diff'] = train_df.apply(lambda row: (row['Procedure Date'] - row['Registration Date']).days, axis=1)
-
-train_df.to_csv('data/data.csv')
-
-
 #Compute difference (in days) between Registration Date and Procedure Date
 enrollment_df['Registration Date'] = pd.to_datetime(enrollment_df['Registration Date'])
 enrollment_df['Procedure Date'] = pd.to_datetime(enrollment_df['Procedure Date'])
@@ -29,4 +22,7 @@ enrollment_df['Age'] = enrollment_df['Date of Birth'].apply(lambda x: age(x))
 
 enrollment_df.drop(columns=['Hospital Id', 'Registration Date', 'Procedure Date', 'Date of Birth'], inplace=True)
 
-# enrollment_df.to_csv('data/data.csv')
+result = enrollment_df.merge(train_df.set_index('Patient Id'), on='Patient Id',)
+
+print(result.head())
+result.to_csv('data/data.csv')
