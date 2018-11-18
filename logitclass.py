@@ -11,7 +11,7 @@ from sklearn.decomposition import PCA
 
 def loadData():
     dataset = pd.read_csv('data/data.csv')
-    feature_cols = ['Date Diff', 'SMS', 'Email', 'Gender']
+    feature_cols = ['Date Diff', 'SMS', 'Email', 'Gender', 'Age']
     target = 'No Show/LateCancel Flag'
     X = dataset[feature_cols]
     y = dataset[target]
