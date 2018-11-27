@@ -11,10 +11,10 @@ from sklearn.decomposition import PCA
 
 def loadData():
     dataset = pd.read_csv('data/data.csv')
-    feature_cols = ['Date Diff', 'SMS', 'Email', 'Gender', 'Age']
-    target = 'No Show/LateCancel Flag'
-    X = dataset[feature_cols]
-    y = dataset[target]
+    #feature_cols = ['Date Diff', 'SMS', 'Email', 'Gender', 'Age']
+    #target = 'No Show/LateCancel Flag'
+    X = dataset.drop(columns=['Patient Id', 'No Show/LateCancel Flag'])
+    y = dataset['No Show/LateCancel Flag']
     return(X, y)
 
 def processData(X, y):
