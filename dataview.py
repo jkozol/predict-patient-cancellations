@@ -8,10 +8,12 @@ def age(b):
 # Load csvs into dataframes
 enrollment_df = pd.read_csv("data/enrollment.csv")
 train_df = pd.read_csv("data/train.csv")
+test_df = pd.read_csv("data/test.csv")
 events_df = pd.read_csv("data/events.csv")
 
 # Drop unnecessary columns from training and events data
 train_df.drop(columns=['Index Id', 'Hospital Id', 'Registration Date', 'Procedure Date'], inplace=True)
+test_df.drop(columns=['Index Id', 'Hospital Id', 'Registration Date', 'Procedure Date'], inplace=True)
 events_df.drop(columns=['Hospital Id', 'Event_Date', 'Event_Time', 'Event_Name', 'Event_Desc'], inplace=True)
 
 # Compute difference (in days) between Registration Date and Procedure Date
@@ -56,7 +58,10 @@ for name, group in grouped_message:
 # Combine training, events, and enrollment data
 enrollment_df = enrollment_df.merge(module_df, on='Patient Id')
 enrollment_df = enrollment_df.merge(message_df, on='Patient Id')
-result = enrollment_df.merge(train_df.set_index('Patient Id'), on='Patient Id',)
+result_train = enrollment_df.merge(train_df.set_index('Patient Id'), on='Patient Id',)
+result_test = enrollment_df.merge(test_df.set_index('Patient Id'), on='Patient Id',)
 
-print(result.head())
-result.to_csv('data/data.csv')
+print(result_train.head())
+print(result_test.head())
+result_train.to_csv('data/data_train.csv')
+result_test.to_csv('data/data_test.csv')
