@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 #import sys
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import roc_auc_score, roc_curve, auc#, accuracy_score, classification_report, confusion_matrix
+from sklearn.metrics import roc_curve, auc#, accuracy_score, classification_report, confusion_matrix
 from sklearn.model_selection import train_test_split
 from sklearn.cross_validation import KFold
 from sklearn.ensemble import RandomForestClassifier#, RandomForestRegressor
@@ -39,8 +39,7 @@ def trainLogit(X_train, X_test, y_train, y_test):
     logit = LogisticRegression(class_weight='balanced')
     logit.fit(X_train, y_train)
     y_pred = logit.predict(X_test)
-    auc = roc_auc_score(y_test, y_pred)
-    return (auc, logit)
+    return logit
     """
     conf_matrix = confusion_matrix(y_test, y_pred)
 
@@ -54,8 +53,7 @@ def trainForest(X_train, X_test, y_train, y_test):
     rf = RandomForestClassifier(n_estimators=100, random_state=0)
     rf.fit(X_train, y_train)
     y_pred = rf.predict(X_test)
-    auc = roc_auc_score(y_test, y_pred)
-    return (auc, rf)
+    return rf
     """
     conf_matrix = confusion_matrix(y_test, y_pred)
 
@@ -79,7 +77,10 @@ def kFoldValidation(X, y, func, k):
         y_train = y.iloc[train_index]
         y_test = y.iloc[test_index]
         
-        AUC, mod = func(X_train, X_test, y_train, y_test)
+        mod = func(X_train, X_test, y_train, y_test)
+        y_pred = mod.predict(X_test)
+        fpr, tpr, _ = roc_curve(y_test, y_pred)
+        AUC = auc(fpr, tpr)
         aucs.append(AUC)
         if AUC > max_auc:
             model = mod
