@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 #import sys
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import roc_auc_score, #accuracy_score, classification_report, confusion_matrix
+from sklearn.metrics import roc_auc_score#, accuracy_score, classification_report, confusion_matrix
 from sklearn.model_selection import train_test_split
 from sklearn.cross_validation import KFold
 from sklearn.ensemble import RandomForestClassifier#, RandomForestRegressor
@@ -65,13 +65,10 @@ def trainForest(X_train, X_test, y_train, y_test):
     print(classification_report(y_test, y_pred))
     """
 
-def kFoldValidation(X, y, k):
-    model_logit = None
-    model_rf = None
-    max_auc_logit = 0.0
-    max_auc_rf = 0.0
-    logit_aucs = np.array([])
-    rf_aucs = np.array([])
+def kFoldValidation(X, y, func, k):
+    model = None
+    max_auc = 0.0
+    aucs = np.array([])
     kfold = KFold(X.shape[0], n_folds=k)
     
     for train_index, test_index in kfold:
@@ -80,20 +77,16 @@ def kFoldValidation(X, y, k):
         y_train = y.iloc[train_index]
         y_test = y.iloc[test_index]
         
-        auc_logit, logit = trainLogit(X_train, X_test, y_train, y_test)
-        logit_aucs = np.append(logit_aucs, auc_logit)
-        if auc_logit > max_auc_logit:
-            model_logit = logit
-            max_auc_logit = auc_logit
-        
-        auc_rf, rf = trainForest(X_train, X_test, y_train, y_test)
-        rf_aucs = np.append(rf_aucs, auc_rf)
-        if auc_rf > max_auc_rf:
-            model_rf = rf
-            max_auc_rf = auc_rf
-    return (np.mean(logit_aucs), np.mean(rf_aucs), model_logit, model_rf)
+        auc, mod = func(X_train, X_test, y_train, y_test)
+        aucs = np.append(aucs, auc)
+        if auc > max_auc:
+            model = mod
+            max_auc = auc
+            
+    return (np.mean(aucs), model)
 
 X, y = loadData()
-auc_logit, auc_rf, logit, rf = kFoldValidation(X, y, 15)
+auc_logit, logit = kFoldValidation(X, y, trainLogit, 15)
+auc_rf, rf = kFoldValidation(X, y, trainForest, 15)
 print("Logistic Regression AUC: ", auc_logit)
 print("Random Forest AUC: ", auc_rf)
