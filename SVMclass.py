@@ -28,14 +28,11 @@ def SVM_KFoldValidation(X, y, func, k, krnl):
     kfold = KFold(X.shape[0], n_folds=k)
     
     for train_index, test_index in kfold:
-        print("here1")
         X_train = X.iloc[train_index]
         X_test = X.iloc[test_index]
         y_train = y.iloc[train_index]
         y_test = y.iloc[test_index]
-        print("here2")
         auc, mod = func(X_train, X_test, y_train, y_test, krnl)
-        print("here3")
         aucs = np.append(aucs, auc)
         if auc > max_auc:
             model = mod
