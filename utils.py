@@ -5,13 +5,22 @@ from sklearn.model_selection import train_test_split, KFold, cross_val_score, cr
 from sklearn.metrics import roc_curve, auc, accuracy_score, classification_report, confusion_matrix, r2_score
 from sklearn.preprocessing import StandardScaler
 
-def loadData():
-    dataset = pd.read_csv('data/data_train.csv')
+def loadTrainingData():
+    data_train = pd.read_csv('data/data_train.csv')
     #feature_cols = ['Date Diff', 'SMS', 'Email', 'Gender', 'Age']
     #target = 'No Show/LateCancel Flag'
-    X = dataset.drop(columns=['Patient Id', 'No Show/LateCancel Flag'])
-    y = dataset['No Show/LateCancel Flag']
+    X = data_train.drop(columns=['Patient Id', 'No Show/LateCancel Flag'])
+    y = data_train['No Show/LateCancel Flag']
     return(X, y)
+
+def loadTestData():
+    data_test = pd.read_csv('data/data_test.csv')
+    #feature_cols = ['Date Diff', 'SMS', 'Email', 'Gender', 'Age']
+    #target = 'No Show/LateCancel Flag'
+    patientIds = data_test['Patient Id']
+    X = data_test.drop(columns=['Patient Id', 'No Show/LateCancel Flag'])
+    return(X, patientIds)
+
 
 def processData(X, y):
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
