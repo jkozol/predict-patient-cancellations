@@ -20,6 +20,38 @@ def trainSVM(X_train, X_test, y_train, y_test, krnl):
     auc = roc_auc_score(y_test, y_pred)
     return (auc, svm)
 
+
+def linearSVM(X_train, X_test, y_train, y_test):
+    svm = SVC(kernel = 'linear')
+    svm.fit(X_train, y_train)
+    y_pred = svm.predict(X_test)
+    auc = roc_auc_score(y_test, y_pred)
+    return (auc, svm)   
+
+
+def rbfSVM(X_train, X_test, y_train, y_test):
+    svm = SVC(kernel = 'rbf')
+    svm.fit(X_train, y_train)
+    y_pred = svm.predict(X_test)
+    auc = roc_auc_score(y_test, y_pred)
+    return (auc, svm)  
+
+
+def sigmoidSVM(X_train, X_test, y_train, y_test):
+    svm = SVC(kernel = 'sigmoid')
+    svm.fit(X_train, y_train)
+    y_pred = svm.predict(X_test)
+    auc = roc_auc_score(y_test, y_pred)
+    return (auc, svm)  
+
+
+def polynomialSVM(X_train, X_test, y_train, y_test):
+    svm = SVC(kernel = 'poly')
+    svm.fit(X_train, y_train)
+    y_pred = svm.predict(X_test)
+    auc = roc_auc_score(y_test, y_pred)
+    return (auc, svm)   
+
 def SVM_KFoldValidation(X, y, func, k, krnl):
     model = None
     max_auc = 0.0
@@ -27,6 +59,7 @@ def SVM_KFoldValidation(X, y, func, k, krnl):
     kfold = KFold(n_splits=k)
     kfold.get_n_splits(X)
     for train_index, test_index in kfold.split(X):
+        print("running fold", train_index)
         X_train = X.iloc[train_index]
         X_test = X.iloc[test_index]
         y_train = y.iloc[train_index]
@@ -39,12 +72,12 @@ def SVM_KFoldValidation(X, y, func, k, krnl):
 
     return (np.mean(aucs), model)
 
-X,y = loadData()
-auc_svml, svml = kFoldValidation(X, y, trainSVM, 10, 'linear')
-print("Linear SVM AUC: ", auc_svml)
-auc_svmr, svmr = kFoldValidation(X, y, trainSVM, 10, 'rbf')
-print("RBF SVM AUC: ", auc_svmr)
-auc_svms, svms = kFoldValidation(X, y, trainSVM, 10, 'sigmoid')
-print("Sigmoid SVM AUC: ", auc_svms)
-auc_svmp, svmp = SVM_KFoldValidation(X, y, trainSVM, 10, 'poly')
-print("Polynomial SVM AUC: ", auc_svmp)
+#X,y = loadData()
+#auc_svml, svml = SVM_KFoldValidation(X, y, trainSVM, 10, 'linear')
+#print("Linear SVM AUC: ", auc_svml)
+#auc_svmr, svmr = SVM_KFoldValidation(X, y, trainSVM, 10, 'rbf')
+#print("RBF SVM AUC: ", auc_svmr)
+#auc_svms, svms = SVM_KFoldValidation(X, y, trainSVM, 10, 'sigmoid')
+#print("Sigmoid SVM AUC: ", auc_svms)
+#auc_svmp, svmp = SVM_KFoldValidation(X, y, trainSVM, 10, 'poly')
+#print("Polynomial SVM AUC: ", auc_svmp)
