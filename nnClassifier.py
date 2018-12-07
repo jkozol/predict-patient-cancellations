@@ -1,67 +1,44 @@
 import numpy as np
-import matplotlib.pyplot as plt
 import pandas as pd
-#import sys
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import roc_curve, auc#, accuracy_score, classification_report, confusion_matrix
+import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split, KFold
-from sklearn.ensemble import RandomForestClassifier#, RandomForestRegressor
-#from sklearn.preprocessing import StandardScaler
-#from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import roc_curve, auc
+from keras.models import Sequential
+from keras.layers import Dense
 
 def loadData():
     dataset = pd.read_csv('data/data_train.csv')
-    #feature_cols = ['Date Diff', 'SMS', 'Email', 'Gender', 'Age']
-    #target = 'No Show/LateCancel Flag'
     X = dataset.drop(columns=['Patient Id', 'No Show/LateCancel Flag'])
     y = dataset['No Show/LateCancel Flag']
-    return(X, y)
+    return X, y
+
 
 def processData(X, y):
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
 
-    # sc = StandardScaler()
-    # X_train = sc.fit_transform(X_train)
-    # X_test = sc.transform(X_test)
+    scaler = StandardScaler()
 
-    X_train_bal1 = X_train[y_train == 1]
-    y_train1 = y_train[y_train == 1]
-    X_train_bal0 = X_train[y_train == 0].sample(len(X_train_bal1))
-    y_train0 = y_train[y_train == 0].sample(len(X_train_bal1))
-    print(X_train_bal0.size, X_train_bal1.size)
+    X_train = scaler.fit_transform(X_train)
+    X_test = scaler.transform(X_test)
 
-    X_train = pd.concat([X_train_bal1, X_train_bal0])
-    y_train = pd.concat([y_train1, y_train0])
     return(X_train, X_test, y_train, y_test)
 
-def trainLogit(X_train, X_test, y_train, y_test):
-    logit = LogisticRegression(class_weight='balanced', solver='newton-cg')
-    logit.fit(X_train, y_train)
-    y_pred = logit.predict(X_test)
-    return logit
-    """
-    conf_matrix = confusion_matrix(y_test, y_pred)
 
-    print("Logistic Regression")
-    print("Accuracy:", accuracy_score(y_test, y_pred))
-    print(conf_matrix)
-    print(classification_report(y_test, y_pred))
-    """
+def neuralnet(X_train, X_test, y_train, y_test):
 
-def trainForest(X_train, X_test, y_train, y_test):
-    rf = RandomForestClassifier(n_estimators=100, random_state=0)
-    rf.fit(X_train, y_train)
-    y_pred = rf.predict(X_test)
-    return rf
-    """
-    conf_matrix = confusion_matrix(y_test, y_pred)
+    classifier = Sequential()
 
-    print("Random Forest")
-    print("Accuracy:", accuracy_score(y_test, y_pred))
-    print(conf_matrix)
-    print(classification_report(y_test, y_pred))
-    """
-# Also ROC stuff
+    classifier.add(Dense(activation='relu', input_dim=334, units=167, kernel_initializer='uniform'))
+    classifier.add(Dense(activation='relu', units=167, kernel_initializer='uniform'))
+    classifier.add(Dense(activation='sigmoid', units=1, kernel_initializer='uniform'))
+
+    classifier.compile(optimizer='adam', loss='binary_crossentropy', metrics=['acc'])
+
+    classifier.fit(X_train, y_train, batch_size=300, epochs=200)
+
+    return classifier
+
 def kFoldValidation(X, y, func, k):
     model = None
     max_auc = 0.0
@@ -117,8 +94,7 @@ def kFoldValidation(X, y, func, k):
     plt.show()
     return model
 
-X, y = loadData()
-print("Logistic Regression")
-logit = kFoldValidation(X, y, trainLogit, 10)
-print("Random Forest")
-rf = kFoldValidation(X, y, trainForest, 10)
+
+# X, y = loadData()
+# X_train, X_test, y_train, y_test = processData(X, y)
+# validate = kFoldValidation(X, y, nnclassifier, 10)
