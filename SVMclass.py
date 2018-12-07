@@ -2,8 +2,7 @@ import pandas as pd
 import numpy as np
 from sklearn.svm import SVC
 from sklearn.metrics import classification_report, confusion_matrix, accuracy_score, roc_auc_score
-from sklearn.model_selection import train_test_split
-from sklearn.cross_validation import KFold
+from sklearn.model_selection import train_test_split, KFold
 
 def loadData():
     dataset = pd.read_csv('data/data_train.csv')
@@ -25,9 +24,9 @@ def SVM_KFoldValidation(X, y, func, k, krnl):
     model = None
     max_auc = 0.0
     aucs = np.array([])
-    kfold = KFold(X.shape[0], n_folds=k)
-    
-    for train_index, test_index in kfold:
+    kfold = KFold(n_splits=k)
+    kfold.get_n_splits(X)
+    for train_index, test_index in kfold.split(X):
         X_train = X.iloc[train_index]
         X_test = X.iloc[test_index]
         y_train = y.iloc[train_index]
@@ -37,7 +36,7 @@ def SVM_KFoldValidation(X, y, func, k, krnl):
         if auc > max_auc:
             model = mod
             max_auc = auc
-            
+
     return (np.mean(aucs), model)
 
 X,y = loadData()
@@ -49,5 +48,3 @@ auc_svms, svms = kFoldValidation(X, y, trainSVM, 10, 'sigmoid')
 print("Sigmoid SVM AUC: ", auc_svms)
 auc_svmp, svmp = SVM_KFoldValidation(X, y, trainSVM, 10, 'poly')
 print("Polynomial SVM AUC: ", auc_svmp)
-
-

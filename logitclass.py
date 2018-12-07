@@ -4,8 +4,7 @@ import pandas as pd
 #import sys
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import roc_curve, auc#, accuracy_score, classification_report, confusion_matrix
-from sklearn.model_selection import train_test_split
-from sklearn.cross_validation import KFold
+from sklearn.model_selection import train_test_split, KFold
 from sklearn.ensemble import RandomForestClassifier#, RandomForestRegressor
 #from sklearn.preprocessing import StandardScaler
 #from sklearn.decomposition import PCA
@@ -36,7 +35,7 @@ def processData(X, y):
     return(X_train, X_test, y_train, y_test)
 
 def trainLogit(X_train, X_test, y_train, y_test):
-    logit = LogisticRegression(class_weight='balanced')
+    logit = LogisticRegression(class_weight='balanced', solver='newton-cg')
     logit.fit(X_train, y_train)
     y_pred = logit.predict(X_test)
     return logit
@@ -69,14 +68,15 @@ def kFoldValidation(X, y, func, k):
     tprs = []
     aucs = []
     mean_fpr = np.linspace(0, 1, 100)
-    kfold = KFold(X.shape[0], n_folds=k)
+    kfold = KFold(n_splits=k)
+    kfold.get_n_splits(X)
     i = 0
-    for train_index, test_index in kfold:
+    for train_index, test_index in kfold.split(X):
         X_train = X.iloc[train_index]
         X_test = X.iloc[test_index]
         y_train = y.iloc[train_index]
         y_test = y.iloc[test_index]
-        
+
         mod = func(X_train, X_test, y_train, y_test)
         y_pred = mod.predict(X_test)
         fpr, tpr, _ = roc_curve(y_test, y_pred)
@@ -109,7 +109,7 @@ def kFoldValidation(X, y, func, k):
     # chance line
     plt.plot([0, 1], [0, 1], linestyle='--', lw=2, color='r',
              label='Chance', alpha=.8)
-    
+
     plt.xlabel('False Positive Rate')
     plt.ylabel('True Positive Rate')
     plt.title('Receiver Operating Characteristic')
