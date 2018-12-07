@@ -27,6 +27,9 @@ enrollment_df['Gender'] = enrollment_df['Gender'].apply(lambda x: x == 'Male').a
 # Compute age from date of birth
 enrollment_df['Date of Birth'] = pd.to_datetime(enrollment_df['Date of Birth'])
 enrollment_df['Age'] = enrollment_df['Date of Birth'].apply(lambda x: age(x))
+# Add columns for the day of week and month of procedure date
+enrollment_df['Procedure Weekday'] = enrollment_df['Procedure Date'].apply(lambda x: x.weekday())
+enrollment_df['Procedure Month'] = enrollment_df['Procedure Date'].apply(lambda x: x.month)
 # Drop unnecessary columns from enrollment data
 enrollment_df.drop(columns=['Hospital Id', 'Registration Date', 'Procedure Date', 'Date of Birth'], inplace=True)
 # Drop rows with NaN
