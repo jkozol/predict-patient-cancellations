@@ -24,33 +24,37 @@ def trainSVM(X_train, X_test, y_train, y_test, krnl):
 def linearSVM(X_train, X_test, y_train, y_test):
     svm = SVC(kernel = 'linear')
     svm.fit(X_train, y_train)
-    y_pred = svm.predict(X_test)
-    auc = roc_auc_score(y_test, y_pred)
-    return (auc, svm)   
+    # y_pred = svm.predict(X_test)
+    # auc = roc_auc_score(y_test, y_pred)
+    # return (auc, svm)
+    return svm
 
 
 def rbfSVM(X_train, X_test, y_train, y_test):
     svm = SVC(kernel = 'rbf')
     svm.fit(X_train, y_train)
-    y_pred = svm.predict(X_test)
-    auc = roc_auc_score(y_test, y_pred)
-    return (auc, svm)  
+    # y_pred = svm.predict(X_test)
+    # auc = roc_auc_score(y_test, y_pred)
+    # return (auc, svm)
+    return svm
 
 
 def sigmoidSVM(X_train, X_test, y_train, y_test):
     svm = SVC(kernel = 'sigmoid')
     svm.fit(X_train, y_train)
-    y_pred = svm.predict(X_test)
-    auc = roc_auc_score(y_test, y_pred)
-    return (auc, svm)  
+    # y_pred = svm.predict(X_test)
+    # auc = roc_auc_score(y_test, y_pred)
+    # return (auc, svm)
+    return svm
 
 
 def polynomialSVM(X_train, X_test, y_train, y_test):
     svm = SVC(kernel = 'poly')
     svm.fit(X_train, y_train)
-    y_pred = svm.predict(X_test)
-    auc = roc_auc_score(y_test, y_pred)
-    return (auc, svm)   
+    # y_pred = svm.predict(X_test)
+    # auc = roc_auc_score(y_test, y_pred)
+    # return (auc, svm)
+    return svm
 
 def SVM_KFoldValidation(X, y, func, k, krnl):
     model = None
