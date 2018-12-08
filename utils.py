@@ -22,8 +22,8 @@ def loadTestData():
     return(X, patientIds)
 
 
-def processData(X, y):
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
+def processData(X_train, X_test, y_train, y_test):
+    # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
 
     # sc = StandardScaler()
     # X_train = sc.fit_transform(X_train)
@@ -55,9 +55,11 @@ def kFoldValidation(X, y, func, k):
         y_train = y.iloc[train_index]
         y_test = y.iloc[test_index]
 
-        sc = StandardScaler()
-        X_train = sc.fit_transform(X_train)
-        X_test = sc.transform(X_test)
+        processData(X_train, X_test, y_train, y_test)
+
+        # sc = StandardScaler()
+        # X_train = sc.fit_transform(X_train)
+        # X_test = sc.transform(X_test)
 
         mod = func(X_train, X_test, y_train, y_test)
         y_pred = mod.predict(X_test)
