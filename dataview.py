@@ -1,5 +1,6 @@
 import pandas as pd
 import datetime as dt
+import numpy as np
 
 def age(b):
     t = dt.date.today()
@@ -24,9 +25,13 @@ enrollment_df['Date Diff'] = enrollment_df.apply(lambda row: (row['Procedure Dat
 enrollment_df['Email'] = enrollment_df['Email'].apply(lambda x: x*1)
 enrollment_df['SMS'] = enrollment_df['SMS'].apply(lambda x: x*1)
 enrollment_df['Gender'] = enrollment_df['Gender'].apply(lambda x: x == 'Male').astype(int)
+enrollment_df['Gender'].fillna(np.rint(enrollment_df['Gender'].mean()), inplace=True)
+
 # Compute age from date of birth
 enrollment_df['Date of Birth'] = pd.to_datetime(enrollment_df['Date of Birth'])
 enrollment_df['Age'] = enrollment_df['Date of Birth'].apply(lambda x: age(x))
+enrollment_df['Age'].fillna(np.rint(enrollment_df['Age'].mean()), inplace=True)
+
 # Add columns for the day of week and month of procedure date
 enrollment_df['Procedure Weekday'] = enrollment_df['Procedure Date'].apply(lambda x: x.weekday())
 enrollment_df['Procedure Month'] = enrollment_df['Procedure Date'].apply(lambda x: x.month)
@@ -57,14 +62,14 @@ for name, group in grouped_message:
     message = name[1]
     if patient in patients:
         message_df.at[patient, str(message)] = group.size
-        
+
 # Combine training, events, and enrollment data
 enrollment_df = enrollment_df.merge(module_df, on='Patient Id')
 enrollment_df = enrollment_df.merge(message_df, on='Patient Id')
 result_train = enrollment_df.merge(train_df.set_index('Patient Id'), on='Patient Id',)
 result_test = enrollment_df.merge(test_df.set_index('Patient Id'), on='Patient Id',)
 
-print(result_train.head())
-print(result_test.head())
+# print(result_train)
+# print(result_test)
 result_train.to_csv('data/data_train.csv')
 result_test.to_csv('data/data_test.csv')
