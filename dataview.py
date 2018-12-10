@@ -69,7 +69,5 @@ enrollment_df = enrollment_df.merge(message_df, on='Patient Id')
 result_train = enrollment_df.merge(train_df.set_index('Patient Id'), on='Patient Id',)
 result_test = enrollment_df.merge(test_df.set_index('Patient Id'), on='Patient Id',)
 
-# print(result_train)
-# print(result_test)
 result_train.to_csv('data/data_train.csv')
 result_test.to_csv('data/data_test.csv')
